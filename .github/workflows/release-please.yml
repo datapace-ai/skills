@@ -1,0 +1,28 @@
+name: Release Please
+
+# Keeps one release PR open per skill, built from conventional commits.
+# Merging it tags assess-vX.Y.Z and writes assess/CHANGELOG.md.
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
