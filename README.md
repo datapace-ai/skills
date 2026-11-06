@@ -10,7 +10,9 @@ Agent skills from [Datapace](https://datapace.ai) for coding agents.
 npx skills add datapace-ai/skills
 ```
 
-Then type `/assess` in Claude Code, or `$assess` in Codex.
+Then type `/assess` in Claude Code, or `$assess` in Codex. Cursor and Gemini CLI pick up the same skill.
+
+The skill may send Datapace anonymous friction reports (the step, a category, a short message, never account ids or names). Set `DATAPACE_SKILL_NO_FEEDBACK=1` to turn them off.
 
 ## License
 
