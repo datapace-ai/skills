@@ -1,8 +1,8 @@
 ---
 name: assess
-description: Datapace Cloud Self-Assessment of managed databases (AWS RDS and Aurora), run from Claude Code, Codex, Cursor or Gemini CLI. Checks fit, drafts the read-only IAM policy, runs the open-source datapace-collector on this machine, then hands off to the browser. Use when the user wants to find cost or waste in their cloud databases, or types /assess.
+description: Datapace Cloud Self-Assessment of managed databases on AWS, Azure and Google Cloud, run from Claude Code, Codex, Cursor or Gemini CLI. Checks fit, drafts the read-only permissions, runs the open-source datapace-collector on this machine, then hands off to the browser. Use when the user wants to find cost or waste in their cloud databases, or types /assess.
 license: Apache-2.0
-compatibility: Needs a local coding agent with a shell (Claude Code, Codex, Cursor, Gemini CLI); claude.ai chat cannot run it. Python 3.10+ and uv on the user's machine.
+compatibility: Needs a local coding agent with a shell (Claude Code, Codex, Cursor, Gemini CLI); claude.ai chat cannot run it. uv on the user's machine.
 metadata:
   version: "0.1.0" # x-release-please-version
 ---
@@ -21,7 +21,7 @@ If you have no shell on the user's machine (for example claude.ai chat), say the
 
 Say this first, before anything else, in one sentence:
 
-> This skill may send anonymous friction reports to Datapace (the step, a category, your agent, the skill version, optionally your cloud provider and database engines, and a short message; never account ids, ARNs, hostnames, paths or names); set `DATAPACE_SKILL_NO_FEEDBACK=1` to turn that off.
+> This skill may send anonymous friction reports to Datapace (the step, a category, your agent, the skill version, optionally your cloud provider and database engines, and a short message; never account, subscription or project ids, ARNs, hostnames, paths or names); set `DATAPACE_SKILL_NO_FEEDBACK=1` to turn that off.
 
 Done when the sentence is said.
 
@@ -29,65 +29,65 @@ Done when the sentence is said.
 
 Ask at most four questions, together, skipping any the user already answered:
 
-1. Which cloud provider?
+1. Which cloud providers?
 2. Which database engines?
-3. Which accounts and regions?
-4. Do they have a payer or billing profile with Cost Explorer access?
+3. Which accounts, subscriptions or projects, and which regions?
+4. Billing access: on AWS, a payer profile with Cost Explorer; on Azure, Cost Management Reader; on Google Cloud, a Cloud Billing export to BigQuery?
 
 Answer from [`references/coverage.md`](references/coverage.md): say which of their engines the assessment covers, partly covers or does not cover.
 
-- **Covered** (at least one `available` row matches): continue.
+- **Covered** (at least one `available` row matches): continue with the covered providers. If they also run something not covered, send one `not_covered` report for it.
 - **Not covered** (nothing they run is `available`): send one `not_covered` report with their provider and engines (see Feedback), tell them coverage follows these requests and that datapace.ai/assessment lists what is coming, and stop.
 
-Done when you know the provider, the engines, the accounts with a profile name for each, the regions, and whether there is a billing profile.
+Done when you know, for each covered provider: the engines; the AWS accounts with a profile name for each, the Azure subscription ids or the Google Cloud project ids; the regions; and the billing access.
 
 ## 3. Prerequisites
 
-Check, by running them:
+Check `uv --version` works. If it is missing, point to https://docs.astral.sh/uv/getting-started/installation/ and let the user install it; `uv` brings its own Python. A user who cannot install anything can run the collector in Azure Cloud Shell or Google Cloud Shell (see [`references/collector.md`](references/collector.md)).
 
-- `python3 --version` is 3.10 or later. macOS's system `python3` is 3.9; `uv` brings its own Python, so a recent `uv` is enough.
-- `uv --version` works. If it is missing, point to https://docs.astral.sh/uv/getting-started/installation/ and let the user install it.
+Sign-in stays with the user, per provider:
 
-Profiles: use only the profile names the user gives you, mapped to their 12-digit account ids. Leave `~/.aws` untouched: the collector opens the named profiles itself and checks each one is the account it is mapped to.
+- **AWS:** use only the profile names the user gives you, mapped to their 12-digit account ids. Leave `~/.aws` untouched: the collector opens the named profiles itself and checks each one is the account it is mapped to.
+- **Azure:** the user is signed in with `az login`, to the tenant of each subscription.
+- **Google Cloud:** the user has run `gcloud auth application-default login`.
 
-Draft the IAM policy from [`references/iam-policy.json`](references/iam-policy.json) as is, for the user to hand to their security team. It grants nine read-only actions: the `rds:` and `cloudwatch:` actions in each account, the `ce:` actions on the billing profile (or each account if there is none). Write it to a file only if the user asks.
+Draft the read-only permissions for the user to hand to their security team:
 
-Done when Python, uv and the account-to-profile mapping are confirmed and the user has the policy.
+- **AWS:** [`references/iam-policy.json`](references/iam-policy.json) as is: nine read-only actions.
+- **Azure and Google Cloud:** the role list and where each role applies, from [`references/collector.md`](references/collector.md).
+
+Write them to a file only if the user asks.
+
+Done when uv and each provider's sign-in are confirmed and the user has the permissions.
 
 ## 4. Run
 
-Assemble one command from [`references/collector.md`](references/collector.md), with its pinned version:
-
-```bash
-uvx datapace-collector@<pinned> --profile <account>=<profile> [--profile …] [--billing-profile <profile>] --regions <r1,r2> --out ./datapace-evidence
-```
-
-Show it, then run it through your normal permission prompt so the user approves it. The collector reports on stderr; read the whole output. Act on the exit code:
+For each covered provider, assemble its command from [`references/collector.md`](references/collector.md), with the pinned version and its own `--out` folder. Show it, then run it through your normal permission prompt so the user approves it. The collector reports on stderr; read the whole output. Act on the exit code:
 
 - **2, usage:** fix the flag the error names and rerun.
-- **3, preflight failed, nothing written:** read the `preflight failed:` line. Either a profile is not the account it is mapped to, or `rds:DescribeDBInstances` is denied everywhere. Tell the user exactly which action to grant in which account (or which mapping to fix), wait for them, rerun.
-- **0, bundle written:** go on below. Each `<action> denied for <account> in <region>` line is a grant that would make the bundle more complete: list them as "grant `<action>` in `<account>`" and offer a rerun once granted.
+- **3, preflight failed, nothing written:** read the `preflight failed:` line and tell the user exactly what to fix: the sign-in, the mapping, or which permission to grant where. Wait for them, rerun.
+- **0, bundle written:** go on below. Each `denied` line is a grant that would make the bundle more complete: list them as "grant `<action or role>` on `<account, subscription or project>`" and offer a rerun once granted. A Google Cloud API that is not enabled is the same: name the API and the project.
 - **1 or 130:** report the error line; send a `blocked` report if the user cannot get past it.
 
 On exit 0, report:
 
-- the bundle path (`datapace-bundle-<id>.tgz` in `./datapace-evidence`) and its size;
+- the bundle path (`datapace-bundle-<id>.tgz` in the `--out` folder) and its size;
 - the inputs whose status is not `complete`, from the bundle's `manifest.json` (`inputs`), read with `tar -xOzf <bundle> manifest.json`;
 - that `aliases.json` beside the bundle maps the aliases back to real names: the user keeps it and never uploads it.
 
-You read `manifest.json` and the collector output only; `aliases.json` and the other files in the bundle stay unopened. If the bundle is over 64 MiB, say the upload will refuse it and offer a rerun with fewer regions or accounts.
+You read `manifest.json` and the collector output only; `aliases.json` and the other files in the bundle stay unopened. If a bundle is over 64 MiB, say the upload will refuse it and offer a rerun with fewer regions, accounts, subscriptions or projects.
 
-Done when a bundle of 64 MiB or less exists and the user has heard its path, size and partial inputs.
+Done when each covered provider has a bundle of 64 MiB or less and the user has heard its path, size and partial inputs.
 
 ## 5. Hand-off
 
 Give the user:
 
 - the link `https://assess.datapace.ai/sign-up?utm_source=<agent label>&utm_medium=agent&utm_campaign=assessment-skill`;
-- the bundle path;
-- what comes next: sign up with a work email, accept the terms, create an assessment, drop the file on the upload step; the analysis takes minutes.
+- the bundle paths;
+- what comes next: sign up with a work email, accept the terms, create an assessment, drop the files on the upload step (one assessment takes a bundle per provider and merges them into one report); the analysis takes minutes.
 
-Stop there. Return only if the user says the upload was refused: over 64 MiB means a rerun with fewer regions; anything else, read them the app's message and help from it.
+Stop there. Return only if the user says the upload was refused: over 64 MiB means a rerun with a smaller scope; anything else, read them the app's message and help from it.
 
 ## Feedback
 

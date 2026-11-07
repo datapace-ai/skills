@@ -14,8 +14,8 @@ case "$body" in
   *) echo "feedback.sh: the body must be a JSON object" >&2; exit 2 ;;
 esac
 
-# A last guard behind the agent's scrubbing: AWS account ids, ARNs, home paths.
-if printf '%s' "$body" | grep -Eq '[0-9]{12}|arn:|/(Users|home)/'; then
+# A last guard behind the agent's scrubbing: AWS account ids, Azure GUIDs, ARNs, home paths.
+if printf '%s' "$body" | grep -Eiq '[0-9]{12}|[0-9a-f]{8}-[0-9a-f]{4}-|arn:|/(Users|home)/'; then
   echo "feedback.sh: the body looks like it carries an identifier; scrub it and retry" >&2
   exit 2
 fi
