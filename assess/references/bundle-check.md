@@ -54,6 +54,6 @@ At most two automatic reruns after the first run. Each finding's `action` and `r
 | `explain`      | a known gap: empty spend on an Azure subscription whose `quotaId` starts with `CSP`, no billing export on Google Cloud, no commitments | say why and whether a rerun can help                                                                      |
 | `report`       | a raw id in the bundle: a collector bug                                                  | do not upload; send a `blocked` report                                                                     |
 
-Every finding with `wait`, `explain` or `report`, and every rerun, earns an unasked offer of a friction report (`feedback.md`).
+Every finding with `wait`, `explain` or `report`, and every rerun, is sent as a friction report (`feedback.md`).
 
 After the last attempt, state the verdict plainly and name the one bundle to upload per provider: the newest one. Earlier bundles in the same `--out` folder are superseded; say so.
