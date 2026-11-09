@@ -68,15 +68,15 @@ For each covered provider, take the command discovery proposed, or assemble it f
 - **0, bundle written:** go on below. Each `denied` line is a grant that would make the bundle more complete: list them as "grant `<action or role>` on `<account, subscription or project>`" and offer a rerun once granted. A Google Cloud API that is not enabled is the same: name the API and the project. When `gcloud` lists instances in that project anyway, the cause is the application-default quota project: tell the user to run `gcloud auth application-default set-quota-project <that project>` and rerun.
 - **1 or 130:** report the error line; send a `blocked` report if the user cannot get past it.
 
-On exit 0, run the **content check**: `uv run --no-project python -I scripts/bundle_summary.py <bundle>` prints each input's status and the counts in the bundle: databases, cost rows and days, metric series and days. Compare them with discovery, or with what the user told you. A **gap** is an empty or thin input: no cost rows, fewer days than 90 of cost or 30 of metrics, fewer databases or metric resources than were found. A `complete` status with an empty input is a gap too; Google Cloud without `--billing-dataset` has no cost rows by design. Then report:
+On exit 0, run the **bundle check** in [`references/bundle-check.md`](references/bundle-check.md): `scripts/check_bundle.py` with discovery's counts gives a verdict, `good`, `good_with_gaps` or `bad`. On `bad`, work the **fix loop** there: at most two automatic reruns, each finding mapped to one move (fix the flags yourself, give the user a command, draft a grant, or explain and wait). Then report:
 
-- the bundle path (`datapace-bundle-<id>.tgz` in the `--out` folder) and its size;
-- each gap and each input that is not `complete`, with the likely cause and fix;
+- the verdict, in plain words, and the one bundle to upload (`datapace-bundle-<id>.tgz` in the `--out` folder), its size, and that earlier bundles there are superseded;
+- each gap, with its cause and whether a later rerun helps;
 - that `aliases.json` beside the bundle maps the aliases back to real names: the user keeps it and never uploads it.
 
-You read the collector output and the summary only; `aliases.json` and the rows in the bundle stay unopened. If a bundle is over 64 MiB, say the upload will refuse it and offer a rerun with fewer regions, accounts, subscriptions or projects.
+You read the collector output and the check's JSON only; `aliases.json` and the rows in the bundle stay unopened.
 
-Done when each covered provider has a bundle of 64 MiB or less and the user has heard its path, size, gaps and partial inputs.
+Done when each covered provider has a `good` bundle, or a `good_with_gaps` one the user agreed to upload, or a `bad` one after the fix loop with the user told what is left.
 
 ## 5. Hand-off
 
@@ -92,6 +92,6 @@ Stop there. Return only if the user says the upload was refused: over 64 MiB mea
 
 ## Feedback
 
-At any step, when the user hits something they cannot get past, finds a step confusing, or has an idea, offer to tell Datapace, and send it on their yes. Offer it unasked too when the content check finds a gap, a collector warning contradicts what you observed, or a rerun was needed. `not_covered` in the fit check needs no extra yes: the consent line covered it.
+At any step, when the user hits something they cannot get past, finds a step confusing, or has an idea, offer to tell Datapace, and send it on their yes. Offer it unasked too when the bundle check finds a gap, a collector warning contradicts what you observed, or a rerun was needed. `not_covered` in the fit check needs no extra yes: the consent line covered it.
 
 Send it with [`scripts/feedback.sh`](scripts/feedback.sh), following [`references/feedback.md`](references/feedback.md) for the body and the scrubbing rules. The script does nothing when `DATAPACE_SKILL_NO_FEEDBACK=1` is set. One report per problem.

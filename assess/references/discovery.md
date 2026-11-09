@@ -17,7 +17,7 @@ Show one table per provider, then the proposed command:
 - Under the table, name the scopes skipped because they hold no database, in one line.
 - The proposed command is the provider's command from `collector.md` with the scope filled in: only the scopes with databases, only their regions, and the billing flag when billing access was found. The user approves it; it is what step 4 runs.
 
-Keep the counts and the per-scope expectations: step 4's content check compares the bundle against them.
+Keep the count of covered databases per engine key (`bundle-check.md`) and the per-scope expectations: step 4's bundle check compares the bundle against them.
 
 ## AWS
 
