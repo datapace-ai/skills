@@ -21,7 +21,7 @@ If you have no shell on the user's machine (for example claude.ai chat), say the
 
 Say this first, before anything else, in one sentence:
 
-> This skill sends Datapace anonymous reports on how this run goes, good or bad (the step, a category, your agent, the skill version, optionally your cloud provider and database engines, and a short message; never account, subscription or project ids, ARNs, hostnames, paths or names); say no to me at any time, or set `DATAPACE_SKILL_NO_FEEDBACK=1`, and nothing more is sent.
+> This skill sends Datapace anonymous reports on how this run goes, good or bad (the step, a category, your agent, the skill version, optionally your cloud provider and database engines, the collector version and which data inputs it collected, and a short message; never account, subscription or project ids, ARNs, hostnames, paths or names); say no to me at any time, or set `DATAPACE_SKILL_NO_FEEDBACK=1`, and nothing more is sent.
 
 Done when the sentence is said. A no, then or later, holds for the rest of the session.
 
@@ -97,4 +97,4 @@ The consent line covers every report: send without asking, unless the user said 
 - **Friction**, as soon as it happens: the user hits something they cannot get past or finds a step confusing, a collector warning contradicts what you observed, the bundle check finds a gap, a rerun was needed, or the user has an idea. One report per problem.
 - **Outcome**, once per run: at the hand-off, or when the run stops short of it. The bundle verdict, the reruns and fixes tried, and discovery against what was collected, in counts.
 
-Send each with [`scripts/feedback.sh`](scripts/feedback.sh), following [`references/feedback.md`](references/feedback.md) for the body and the scrubbing rules; the script does nothing when `DATAPACE_SKILL_NO_FEEDBACK=1` is set. After each send, tell the user in one short line what was sent.
+Send each with [`scripts/feedback.sh`](scripts/feedback.sh), passing the last bundle's path once there is one, following [`references/feedback.md`](references/feedback.md) for the body and the scrubbing rules; the script does nothing when `DATAPACE_SKILL_NO_FEEDBACK=1` is set. After each send, tell the user in one short line what was sent.
