@@ -1,13 +1,13 @@
 # datapace-collector
 
-Pinned version: 0.4.0
+Pinned version: 0.4.1
 
 Open source (Apache-2.0) on PyPI: https://pypi.org/project/datapace-collector/. Run it with `uvx`, unmodified; only bundles from the unmodified collector may be uploaded. `uvx` brings its own Python. One run reads one provider; for several providers, run once per provider into its own folder.
 
 ## AWS
 
 ```bash
-uvx datapace-collector@0.4.0 --profile <account>=<profile> [--profile …] [--billing-profile <profile>] --regions <r1,r2> --out ./datapace-evidence/aws
+uvx datapace-collector@0.4.1 --profile <account>=<profile> [--profile …] [--billing-profile <profile>] --regions <r1,r2> --out ./datapace-evidence/aws
 ```
 
 - Sign-in: the named AWS profiles only. Each must be the 12-digit account it is mapped to (`sts:GetCallerIdentity`).
@@ -17,7 +17,7 @@ uvx datapace-collector@0.4.0 --profile <account>=<profile> [--profile …] [--bi
 ## Azure
 
 ```bash
-uvx 'datapace-collector[azure]@0.4.0' --provider azure --subscription <subscription id> [--subscription …] --regions <r1,r2> --out ./datapace-evidence/azure
+uvx 'datapace-collector[azure]@0.4.1' --provider azure --subscription <subscription id> [--subscription …] --regions <r1,r2> --out ./datapace-evidence/azure
 ```
 
 - Sign-in: the user's existing `az login`. For a subscription in another tenant: `az login --tenant <tenant>`.
@@ -27,7 +27,7 @@ uvx 'datapace-collector[azure]@0.4.0' --provider azure --subscription <subscript
 ## Google Cloud
 
 ```bash
-uvx 'datapace-collector[gcp]@0.4.0' --provider gcp --project <project id> [--project …] [--billing-dataset <project>.<dataset>] --regions <r1,r2> --out ./datapace-evidence/gcp
+uvx 'datapace-collector[gcp]@0.4.1' --provider gcp --project <project id> [--project …] [--billing-dataset <project>.<dataset>] --regions <r1,r2> --out ./datapace-evidence/gcp
 ```
 
 - Sign-in: application-default credentials (`gcloud auth application-default login`), no key file.
