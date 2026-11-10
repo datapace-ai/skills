@@ -12,16 +12,7 @@
       "name": "assess",
       "source": "./",
       "description": "Datapace Cloud Self-Assessment: find cost and waste in your managed databases on AWS, Azure and Google Cloud. Type /assess.",
-      "author": {
-        "name": "Datapace",
-        "url": "https://datapace.ai"
-      },
-      "homepage": "https://datapace.ai",
-      "repository": "https://github.com/datapace-ai/skills",
-      "license": "Apache-2.0",
-      "keywords": ["finops", "cloud-cost", "database", "aws", "azure", "gcp"],
-      "category": "productivity",
-      "skills": ["./assess"]
+      "category": "productivity"
     }
   ]
 }
