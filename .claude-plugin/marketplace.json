@@ -1,0 +1,18 @@
+{
+  "name": "datapace",
+  "owner": {
+    "name": "Datapace",
+    "url": "https://datapace.ai"
+  },
+  "metadata": {
+    "description": "Datapace skills for coding agents."
+  },
+  "plugins": [
+    {
+      "name": "assess",
+      "source": "./",
+      "description": "Datapace Cloud Self-Assessment: find cost and waste in your managed databases on AWS, Azure and Google Cloud. Type /assess.",
+      "category": "productivity"
+    }
+  ]
+}

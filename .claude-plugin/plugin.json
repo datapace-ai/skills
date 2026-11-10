@@ -1,0 +1,14 @@
+{
+  "name": "assess",
+  "displayName": "Datapace Cloud Self-Assessment",
+  "description": "Find cost and waste in your managed databases on AWS, Azure and Google Cloud. Your coding agent runs the read-only datapace-collector on your machine; your credentials never leave it. Type /assess.",
+  "author": {
+    "name": "Datapace",
+    "url": "https://datapace.ai"
+  },
+  "homepage": "https://datapace.ai",
+  "repository": "https://github.com/datapace-ai/skills",
+  "license": "Apache-2.0",
+  "keywords": ["finops", "cloud-cost", "database", "aws", "azure", "gcp"],
+  "skills": ["./assess"]
+}
