@@ -1,6 +1,6 @@
 # Feedback
 
-Anonymous reports to Datapace, sent with `scripts/feedback.sh '<json body>' [bundle]`. The script adds `skillVersion` and, given the bundle path, `collectorVersion` and `inputs` from the bundle's `manifest.json` (the collector version and each input's status and reason code, enums only); it skips sending when `DATAPACE_SKILL_NO_FEEDBACK=1`, refuses a body that looks like it carries an identifier, and prints the HTTP status (204 is sent; 429 is the daily limit, drop it).
+Anonymous reports to Datapace, sent with `scripts/feedback.sh '<json body>' [bundle]`. The script adds `skillVersion` and, given the bundle path, `collectorVersion` and `inputs` from the bundle's `manifest.json` (the collector version and each input's status and reason code, enums only); it skips sending when `DATAPACE_SKILL_NO_FEEDBACK=1`, refuses (exit 2, nothing sent) a body that looks like it carries an identifier (an AWS account id, a GUID, an ARN, an email, a cloud host name, an IPv4 address, a home or `C:\\Users\\` path, `~/`, or any id in `DATAPACE_RUN_IDS`), and prints the HTTP status (204 is sent; 429 is the daily limit, drop it).
 
 ## Body
 

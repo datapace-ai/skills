@@ -14,11 +14,20 @@ case "$body" in
   *) echo "feedback.sh: the body must be a JSON object" >&2; exit 2 ;;
 esac
 
-# A last guard behind the agent's scrubbing: AWS account ids, Azure GUIDs, ARNs, home paths.
-if printf '%s' "$body" | grep -Eiq '[0-9]{12}|[0-9a-f]{8}-[0-9a-f]{4}-|arn:|/(Users|home)/'; then
+# A last guard behind the agent's scrubbing: AWS account ids, Azure GUIDs, ARNs,
+# home paths (Unix, Windows, ~/), emails, cloud host names, IPv4 addresses, and the
+# run's own ids from DATAPACE_RUN_IDS (space or comma separated). Ambiguous refuses:
+# a lost report costs less than a leaked identifier.
+refuse() {
   echo "feedback.sh: the body looks like it carries an identifier; scrub it and retry" >&2
   exit 2
-fi
+}
+if printf '%s' "$body" | grep -Eiq '[0-9]{12}|[0-9a-f]{8}-[0-9a-f]{4}-|arn:|/(Users|home)/|[a-z]:\\+users|~/|[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z0-9.-]+|amazonaws\.com|azure\.com|windows\.net|googleapis\.com|([0-9]{1,3}\.){3}[0-9]{1,3}'; then refuse; fi
+set -f
+for id in $(printf '%s' "${DATAPACE_RUN_IDS:-}" | tr ',' ' '); do
+  if printf '%s' "$body" | grep -Fiq -- "$id"; then refuse; fi
+done
+set +f
 
 dir=$(cd "$(dirname "$0")/.." && pwd)
 version=$(sed -n 's/^ *version: *"\([^"]*\)".*/\1/p' "$dir/SKILL.md" | head -n 1)
