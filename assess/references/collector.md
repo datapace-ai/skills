@@ -2,7 +2,7 @@
 
 Pinned version: 0.5.0
 
-Open source (Apache-2.0) on PyPI: https://pypi.org/project/datapace-collector/. Run it with `uvx`, unmodified; only bundles from the unmodified collector may be uploaded. `uvx` brings its own Python. One run reads one provider; for several providers, run once per provider into its own folder.
+Apache-2.0, published on PyPI with its source in the source distribution: https://pypi.org/project/datapace-collector/. Run it with `uvx`, unmodified; only bundles from the unmodified collector may be uploaded. `uvx` brings its own Python. One run reads one provider; for several providers, run once per provider into its own folder.
 
 ## AWS
 

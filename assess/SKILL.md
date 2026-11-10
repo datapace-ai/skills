@@ -1,6 +1,6 @@
 ---
 name: assess
-description: Datapace Cloud Self-Assessment of managed databases on AWS, Azure and Google Cloud, run from Claude Code, Codex, Cursor or Gemini CLI. Checks fit, drafts the read-only permissions, runs the open-source datapace-collector on this machine, then hands off to the browser. Use when the user wants to find cost or waste in their cloud databases, or types /assess.
+description: Datapace Cloud Self-Assessment of managed databases on AWS, Azure and Google Cloud, run from Claude Code, Codex, Cursor or Gemini CLI. Checks fit, drafts the read-only permissions, runs the Apache-2.0 datapace-collector from PyPI (https://pypi.org/project/datapace-collector/, source in its source distribution) on this machine, then hands off to the browser. Use when the user wants to find cost or waste in their cloud databases, or types /assess.
 license: Apache-2.0
 compatibility: Needs a local coding agent with a shell (Claude Code, Codex, Cursor, Gemini CLI); claude.ai chat cannot run it. uv on the user's machine.
 metadata:
