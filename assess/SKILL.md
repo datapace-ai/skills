@@ -4,7 +4,7 @@ description: Datapace Cloud Self-Assessment of managed databases on AWS, Azure a
 license: Apache-2.0
 compatibility: Needs a local coding agent with a shell (Claude Code, Codex, Cursor, Gemini CLI); claude.ai chat cannot run it. uv on the user's machine.
 metadata:
-  version: "0.1.0" # x-release-please-version
+  version: "0.2.0" # x-release-please-version
 ---
 
 # assess
